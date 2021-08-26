@@ -1,16 +1,38 @@
-/*
- * nRF24_Defs.h
- *
- *  Created on: Apr 26, 2020
- *      Author: Mateusz Salamon
- */
-
 #ifndef INC_NRF24_NRF24_DEFS_H_
 #define INC_NRF24_NRF24_DEFS_H_
 
 //
 // Registers
 //
+
+enum Register {
+	config = 0,
+	enableAutoAck = 1,
+	enableRxAddr = 2,
+	setupAddrWidth = 3,
+	setupRetries = 4,
+	rfChannel = 5,
+	rfSetup = 6,
+	status = 7,
+	observeTx = 8,
+	cd = 9,
+	rxAddrPipe0 = 10,
+	rxAddrPipe1 = 11,
+	rxAddrPipe2 = 12,
+	rxAddrPipe3 = 13,
+	rxAddrPipe4 = 14,
+	rxAddrPipe5 = 15,
+	txAddr = 16,
+	rxPayloadWidthPipe0 = 17,
+	rxPayloadWidthPipe1 = 18,
+	rxPayloadWidthPipe2 = 19,
+	rxPayloadWidthPipe3 = 20,
+	rxPayloadWidthPipe4 = 21,
+	rxPayloadWidthPipe5 = 22,
+	fifoStatus = 23,
+	dynamicPayload = 0x1C,
+	feature = 0x1D
+};
 #define CONFIG		0x00
 #define EN_AA		0x01
 #define EN_RXADDR	0x02

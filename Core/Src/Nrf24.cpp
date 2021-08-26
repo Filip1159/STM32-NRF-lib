@@ -19,17 +19,17 @@ Nrf24::Nrf24(SPI_HandleTypeDef *hspi, PowerLevel level, DataRate rate, uint8_t c
 
 	HAL_Delay(5); // Wait for radio power up
 
-	setPowerLevel(level); // Radio power
-	setDataRate(rate); // Data Rate
-	enableCrc(); // Enable CRC
-	setCrcLength(Crc_1byte); // CRC Length 1 byte
+	setPowerLevel(level);
+	setDataRate(rate);
+	enableCrc();
+	setCrcLength(Crc_1byte);
 	setRetries(0x0F, 0x0F); // 3750us, 15 times
 	writeRegister(DYNPD, 0); // Disable dynamic payloads for all pipes
-	setRFChannel(channel); // Set RF channel for transmission
+	setRFChannel(channel);
 	setPayloadSizeForPipe(pipe, NRF24_PAYLOAD_SIZE); // Set 1 byte payload for pipe 0
-	enablePipe(pipe); // Enable pipe 0
-	enableAutoAckForPipe(pipe); // Enable auto ACK for pipe 0
-	setAddressSize(Size_3bytes); // Set address size
+	enablePipe(pipe);
+	enableAutoAckForPipe(pipe);
+	setAddressSize(Size_3bytes);
 
 	HAL_Delay(20);
 	disableRxDataReadyIrq();
