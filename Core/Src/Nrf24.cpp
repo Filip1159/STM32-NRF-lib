@@ -64,7 +64,7 @@ void Nrf24::writeRegister(Register reg, uint8_t val)
 {
 	uint8_t tmp[2];
 
-	tmp[0] = CMD_W_REGISTER | reg;
+	tmp[0] = writeReg | reg;
 	tmp[1] = val;
 
 	NRF24_CSN_LOW;
@@ -74,7 +74,7 @@ void Nrf24::writeRegister(Register reg, uint8_t val)
 
 void Nrf24::writeRegisters(Register reg, uint8_t* val, uint8_t len)
 {
-	reg = (Register) (reg | CMD_W_REGISTER);
+	reg = (Register) (reg | writeReg);
 
 	NRF24_CSN_LOW;
 	HAL_SPI_Transmit(hspi, (uint8_t*) &reg, 1, 1000);
@@ -88,12 +88,12 @@ void Nrf24::rxMode()
 	// Restore pipe 0 adress after comeback from TX mode
 	setRxAddressForPipe(Pipe0, addr_p0_backup);
 	// PWR_UP bit set
-	cfg |= (1<<NRF24_PWR_UP);
+	cfg |= (1 << powerUp);
 	// PRIM_RX bit set
-	cfg |= (1<<NRF24_PRIM_RX);
+	cfg |= (1 << primRx);
 	writeRegister(config, cfg);
 	// Reset status
-	writeRegister(status, (1 << NRF24_RX_DR) | (1 << NRF24_TX_DS) | (1 << NRF24_MAX_RT));
+	writeRegister(status, (1 << dataReceived) | (1 << dataSent) | (1 << maxRetransmits));
 
 	flushRx();
 	flushTx();
@@ -107,12 +107,12 @@ void Nrf24::txMode(void)
 	NRF24_CE_LOW;
 	uint8_t cfg = readRegister(config);
 	// PWR_UP bit set
-	cfg |= (1<<NRF24_PWR_UP);
+	cfg |= (1 << powerUp);
 	// PRIM_RX bit low
-	cfg &= ~(1<<NRF24_PRIM_RX);
+	cfg &= ~(1 << primRx);
 	writeRegister(config, cfg);
 	// Reset status
-	writeRegister(status, (1 << NRF24_RX_DR) | (1 << NRF24_TX_DS) | (1 << NRF24_MAX_RT));
+	writeRegister(status, (1 << dataReceived) | (1 << dataSent) | (1 << maxRetransmits));
 
 	flushRx();
 	flushTx();
@@ -124,7 +124,7 @@ void Nrf24::setPowerLevel(PowerLevel level)
 {
 	uint8_t rf_setup = readRegister(rfSetup);
 	rf_setup &= 0xF8; // Clear PWR bits
-	rf_setup |= (level<<1);
+	rf_setup |= (level << 1);
 	writeRegister(rfSetup, rf_setup);
 }
 
@@ -133,23 +133,23 @@ void Nrf24::setDataRate(DataRate rate)
 	uint8_t rf_setup = readRegister(rfSetup);
 	rf_setup &= 0xD7; // Clear DR bits (1MBPS)
 	if(rate == DataRate_250kbps)
-		rf_setup |= (1<<NRF24_RF_DR_LOW);
+		rf_setup |= (1 << rfDataRateLow);
 	else if(rate == DataRate_2mbps)
-		rf_setup |= (1<<NRF24_RF_DR_HIGH);
+		rf_setup |= (1 << rfDataRateHigh);
 	writeRegister(rfSetup, rf_setup);
 }
 
 void Nrf24::enableCrc()
 {
 	uint8_t cfg = readRegister(config);
-	cfg |= (1<<NRF24_EN_CRC);
+	cfg |= (1 << enableCrcBit);
 	writeRegister(config, cfg);
 }
 
 void Nrf24::disableCrc()
 {
 	uint8_t cfg = readRegister(config);
-	cfg &= ~(1<<NRF24_EN_CRC);
+	cfg &= ~(1 << enableCrcBit);
 	writeRegister(config, cfg);
 }
 
@@ -157,16 +157,16 @@ void Nrf24::setCrcLength(CrcLength length)
 {
 	uint8_t cfg = readRegister(config);
 	if(length == Crc_2bytes)
-		cfg |= (1<<NRF24_CRCO);
+		cfg |= (1 << crco);
 	else
-		cfg &= ~(1<<NRF24_CRCO);
+		cfg &= ~(1 << crco);
 	writeRegister(config, cfg);
 }
 
 void Nrf24::setRetries(uint8_t timeout, uint8_t repeats)
 {
 	// timeout * 250us, repeats
-	writeRegister(setupRetries, (((timeout & 0x0F)<<NRF24_ARD) | ((repeats & 0x0F)<<NRF24_ARC)));
+	writeRegister(setupRetries, ((timeout & 0x0F) << ard) | ((repeats & 0x0F) << arc));
 }
 
 void Nrf24::setRFChannel(uint8_t channel)
@@ -209,7 +209,7 @@ void Nrf24::disableAutoAckForPipe(PipeNumber pipe)
 
 void Nrf24::setAddressSize(AddrSize size)
 {
-	writeRegister(setupAddrWidth, ((size-2) & 0x03));
+	writeRegister(setupAddrWidth, size - 2);
 }
 
 void Nrf24::setRxAddressForPipe(PipeNumber pipe, uint8_t* address)
@@ -257,48 +257,48 @@ void Nrf24::clearInterrupts()
 void Nrf24::enableRxDataReadyIrq()
 {
 	uint8_t cfg = readRegister(config);
-	cfg &= ~(1 << NRF24_RX_DR);
+	cfg &= ~(1 << dataReceived);
 	writeRegister(config, cfg);
 }
 
 void Nrf24::disableRxDataReadyIrq()
 {
 	uint8_t cfg = readRegister(config);
-	cfg |= (1 << NRF24_RX_DR);
+	cfg |= (1 << dataReceived);
 	writeRegister(config, cfg);
 }
 
 void Nrf24::enableTxDataSentIrq()
 {
 	uint8_t cfg = readRegister(config);
-	cfg &= ~(1 << NRF24_TX_DS);
+	cfg &= ~(1 << dataSent);
 	writeRegister(config, cfg);
 }
 
 void Nrf24::disableTxDataSentIrq()
 {
 	uint8_t cfg = readRegister(config);
-	cfg |= (1 << NRF24_TX_DS);
+	cfg |= (1 << dataSent);
 	writeRegister(config, cfg);
 }
 
 void Nrf24::enableMaxRetransmitIrq()
 {
 	uint8_t cfg = readRegister(config);
-	cfg &= ~(1 << NRF24_MAX_RT);
+	cfg &= ~(1 << maxRetransmits);
 	writeRegister(config, cfg);
 }
 
 void Nrf24::disableMaxRetransmitIrq()
 {
 	uint8_t cfg = readRegister(config);
-	cfg |= (1 << NRF24_MAX_RT);
+	cfg |= (1 << maxRetransmits);
 	writeRegister(config, cfg);
 }
 
 void Nrf24::writeTxPayload(uint8_t * data, uint8_t size)
 {
-	writeRegisters((Register) CMD_W_TX_PAYLOAD, data, NRF24_PAYLOAD_SIZE);
+	writeRegisters((Register) writePayload, data, NRF24_PAYLOAD_SIZE);
 }
 
 uint8_t Nrf24::waitTx()
@@ -310,17 +310,17 @@ uint8_t Nrf24::waitTx()
 	do {
 		HAL_Delay(1);
 		st = readRegister(status);
-	} while(!(st & (1 << NRF24_MAX_RT) || st & (1 << NRF24_TX_DS)));
-	if (st & (1 << NRF24_TX_DS)) return 0;
+	} while(!(st & (1 << maxRetransmits) || st & (1 << dataSent)));
+	if (st & (1 << dataSent)) return 0;
 	else return 1;
 }
 
 void Nrf24::readRxPaylaod(uint8_t *data, uint8_t *size)
 {
-	readRegisters((Register) CMD_R_RX_PAYLOAD, data, NRF24_PAYLOAD_SIZE);
-	writeRegister(status, 1 << NRF24_RX_DR);
-	if (readRegister(status) & (1 << NRF24_TX_DS))
-		writeRegister(status, 1 << NRF24_TX_DS);
+	readRegisters((Register) readPayload, data, NRF24_PAYLOAD_SIZE);
+	writeRegister(status, 1 << dataReceived);
+	if (readRegister(status) & (1 << dataSent))
+		writeRegister(status, 1 << dataSent);
 }
 
 uint8_t Nrf24::rxAvailable()
@@ -339,18 +339,18 @@ uint8_t Nrf24::rxAvailable()
 
 void Nrf24::flushRx()
 {
-	uint8_t command = CMD_FLUSH_RX;
+	Command cmd = flushRxCmd;
 
 	NRF24_CSN_LOW;
-	HAL_SPI_Transmit(hspi, &command, 1, 1000);
+	HAL_SPI_Transmit(hspi, (uint8_t*) &cmd, 1, 1000);
 	NRF24_CSN_HIGH;
 }
 
 void Nrf24::flushTx()
 {
-	uint8_t command = CMD_FLUSH_TX;
+	Command cmd = flushTxCmd;
 
 	NRF24_CSN_LOW;
-	HAL_SPI_Transmit(hspi, &command, 1, 1000);
+	HAL_SPI_Transmit(hspi, (uint8_t*) &cmd, 1, 1000);
 	NRF24_CSN_HIGH;
 }
