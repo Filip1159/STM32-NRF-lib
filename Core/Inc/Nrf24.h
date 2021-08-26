@@ -10,10 +10,10 @@ class Nrf24 {
 	public:
 		Nrf24(SPI_HandleTypeDef *hspi, PowerLevel level, DataRate rate, uint8_t channel, PipeNumber pipe);
 
-		uint8_t readRegister(uint8_t reg);
-		void readRegisters(uint8_t reg, uint8_t* ret, uint8_t len);
-		void writeRegister(uint8_t reg, uint8_t val);
-		void writeRegisters(uint8_t reg, uint8_t* val, uint8_t len);
+		uint8_t readRegister(Register reg);
+		void readRegisters(Register reg, uint8_t* ret, uint8_t len);
+		void writeRegister(Register reg, uint8_t val);
+		void writeRegisters(Register reg, uint8_t* val, uint8_t len);
 		
 
 		void rxMode();
