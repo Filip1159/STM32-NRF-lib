@@ -98,7 +98,7 @@ int main(void)
   nrf.setTxAddress((uint8_t*)"Nad");
   nrf.txMode();
   uint32_t tick = HAL_GetTick();
-
+  uint8_t message = 10;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -107,7 +107,7 @@ int main(void)
   {
 	  if(HAL_GetTick() - tick > 200) {
 		  tick = HAL_GetTick();
-		  uint8_t message = 10;
+		  message++;
 		  nrf.writeTxPayload(&message, 1);
 		  HAL_Delay(1);
 		  HAL_UART_Transmit(&huart2, (uint8_t*)"PayloadWritten ", 15, 1000);

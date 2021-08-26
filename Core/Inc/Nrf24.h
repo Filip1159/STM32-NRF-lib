@@ -7,10 +7,6 @@ class Nrf24 {
 		SPI_HandleTypeDef *hspi;
 		uint8_t addr_p0_backup[Size_3bytes];
 
-		void delay_ms(uint8_t Time);
-		void readSpi(uint8_t *Data, uint8_t Length);
-		void sendSpi(uint8_t *Data, uint8_t Length);
-
 	public:
 		Nrf24(SPI_HandleTypeDef *hspi, PowerLevel level, DataRate rate, uint8_t channel, PipeNumber pipe);
 
@@ -19,10 +15,6 @@ class Nrf24 {
 		void writeRegister(uint8_t reg, uint8_t val);
 		void writeRegisters(uint8_t reg, uint8_t* val, uint8_t len);
 		
-		uint8_t readConfig();
-		void writeConfig(uint8_t conf);
-		uint8_t readStatus();
-		void writeStatus(uint8_t st);
 
 		void rxMode();
 		void txMode();
