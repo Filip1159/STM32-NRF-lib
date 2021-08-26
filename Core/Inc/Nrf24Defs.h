@@ -1,9 +1,4 @@
-#ifndef INC_NRF24_NRF24_DEFS_H_
-#define INC_NRF24_NRF24_DEFS_H_
-
-//
-// Registers
-//
+#pragma once
 
 enum Register {
 	config = 0,
@@ -24,9 +19,6 @@ enum Register {
 	feature = 0x1D
 };
 
-//
-// Commands
-//
 enum Command {
 	readReg = 0x00,
 	writeReg = 0x20,
@@ -41,10 +33,6 @@ enum Command {
 	writeTxPayloadNoAck = 0xB0,
 	nop = 0xFF
 };
-
-//
-// Bit Mnemonics
-//
 
 enum Bit {
 	dataReceived = 6,
@@ -123,5 +111,3 @@ enum PowerLevel {
 	Power_m6 = 2,
 	Power_0 = 3
 };
-
-#endif

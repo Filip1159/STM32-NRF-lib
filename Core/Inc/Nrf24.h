@@ -1,14 +1,17 @@
-#ifndef NRF24_H
-#define NFR24_H
+#pragma once
 #include "Nrf24Defs.h"
 
 class Nrf24 {
 	private:		
 		SPI_HandleTypeDef *hspi;
 		uint8_t addr_p0_backup[Size_3bytes];
+		GPIO_TypeDef* CSN_Port;
+		uint16_t CSN;
+		GPIO_TypeDef* CE_Port;
+		uint16_t CE;
 
 	public:
-		Nrf24(SPI_HandleTypeDef *hspi, PowerLevel level, DataRate rate, uint8_t channel, PipeNumber pipe);
+		Nrf24(SPI_HandleTypeDef *hspi, GPIO_TypeDef* CSN_Port, uint16_t CSN, GPIO_TypeDef* CE_Port, uint16_t CE, PowerLevel level, DataRate rate, uint8_t channel, PipeNumber pipe);
 
 		uint8_t readRegister(Register reg);
 		void readRegisters(Register reg, uint8_t* ret, uint8_t len);
@@ -51,5 +54,3 @@ class Nrf24 {
 		void flushRx();
 		void flushTx();
 };
-
-#endif

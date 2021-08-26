@@ -93,7 +93,7 @@ int main(void)
   MX_SPI1_Init();
   MX_ADC_Init();
   /* USER CODE BEGIN 2 */
-  Nrf24 nrf(&hspi1, Power_0, DataRate_250kbps, 124, Pipe0);
+  Nrf24 nrf(&hspi1, CSN_GPIO_Port, CSN_Pin, CE_GPIO_Port, CE_Pin, Power_0, DataRate_250kbps, 124, Pipe0);
   nrf.setRxAddressForPipe(Pipe0, (uint8_t*)"Odb");
   nrf.setTxAddress((uint8_t*)"Nad");
   nrf.txMode();
