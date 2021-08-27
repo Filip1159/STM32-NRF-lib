@@ -19,7 +19,7 @@ Nrf24::Nrf24(
 		uint8_t payloadSize,
 		AddrSize addrSize
 	)
-    :hspi(hspi), CSN_Port(CSN_Port), CSN(CSN), CE_Port(CE_Port), CE(CE), payloadSize(payloadSize), addrSize(addrSize)
+    :hspi(hspi), CSN_Port(CSN_Port), CSN(CSN), CE_Port(CE_Port), CE(CE), dynamicPayloadEnabled(dynamicPayloadEnabled), payloadSize(payloadSize), addrSize(addrSize)
 {
 	HAL_GPIO_WritePin(CE_Port, CE, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(CSN_Port, CSN, GPIO_PIN_SET);
@@ -132,6 +132,21 @@ void Nrf24::enableDynamicPayload() {
 	uint8_t f = readRegister(feature);
 	writeRegister(feature, f | 1 << enDynamicPayload);
 	writeRegister(dynamicPayload, 0x3F);  // enable dynamic payload for all pipes
+}
+
+uint8_t Nrf24::getDynamicPayloadSize()
+{
+    uint8_t result = 0;
+
+    result = readRegister((Register) readRxPayloadWidth);
+
+    if (result > 32) // Something went wrong :)
+    {
+        flushRx();
+        HAL_Delay(2);
+        return 0;
+    }
+    return result;
 }
 
 void Nrf24::setPowerLevel(PowerLevel level)
@@ -317,7 +332,11 @@ void Nrf24::disableMaxRetransmitIrq()
 
 void Nrf24::writeTxPayload(uint8_t * data, uint8_t size)
 {
-	writeRegisters((Register) writePayload, data, payloadSize);
+	if (dynamicPayloadEnabled) {
+		writeRegisters((Register) writePayload, data, size);
+	} else {
+		writeRegisters((Register) writePayload, data, payloadSize);
+	}
 }
 
 bool Nrf24::waitTx()
@@ -336,7 +355,12 @@ bool Nrf24::waitTx()
 
 void Nrf24::readRxPaylaod(uint8_t *data, uint8_t *size)
 {
-	readRegisters((Register) readPayload, data, payloadSize);
+	if (dynamicPayloadEnabled) {
+		*size = getDynamicPayloadSize();
+		readRegisters((Register) readPayload, data, *size);
+	} else {
+		readRegisters((Register) readPayload, data, payloadSize);
+	}
 	writeRegister(status, 1 << dataReady);
 	if (readRegister(status) & 1 << dataSent) {
 		writeRegister(status, 1 << dataSent);

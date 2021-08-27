@@ -101,27 +101,29 @@ int main(void)
   MX_SPI1_Init();
   MX_ADC_Init();
   /* USER CODE BEGIN 2 */
-  Nrf24 nrf(&hspi1, CSN_GPIO_Port, CSN_Pin, CE_GPIO_Port, CE_Pin, power_0, dataRate250kbps, 124, pipe0, false, 1, size3bytes);
+  Nrf24 nrf(&hspi1, CSN_GPIO_Port, CSN_Pin, CE_GPIO_Port, CE_Pin, power_0, dataRate250kbps, 124, pipe0, true, 32, size3bytes);
   nrf.setRxAddressForPipe(pipe0, (uint8_t*)"Odb");
   nrf.setTxAddress((uint8_t*)"Nad");
   nrf.txMode();
   uint32_t tick = HAL_GetTick();
-  uint8_t message = 10;
+  uint8_t message[] = "123456789 123456789 123456789 XX";  // don't use uint8_t* message here, as it' s a pointer to string literal, that cannot be modified - program crashes here
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if(HAL_GetTick() - tick > 200) {
+	  if (HAL_GetTick() - tick > 200) {
 		  tick = HAL_GetTick();
-		  message++;
-		  nrf.writeTxPayload(&message, 1);
+		  nrf.writeTxPayload(message, 32);
 		  HAL_Delay(1);
 		  nrf.waitTx();
 		  printf("Payload written");
 		  fflush(stdout);
 		  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+		  for (uint8_t i=0; i<32; i++) {
+			  message[i]++;
+		  }
 	  }
     /* USER CODE END WHILE */
 

@@ -9,6 +9,7 @@ class Nrf24 {
 		uint16_t CSN;
 		GPIO_TypeDef* CE_Port;
 		uint16_t CE;
+		bool dynamicPayloadEnabled;
 		uint8_t payloadSize;
 		AddrSize addrSize;
 
@@ -38,6 +39,7 @@ class Nrf24 {
 
 		void enableDynamicPayload();
 		void disableDynamicPayload();
+		uint8_t getDynamicPayloadSize();
 		void setPowerLevel(PowerLevel level);
 		void setDataRate(DataRate rate);
 		void enableCrc();
