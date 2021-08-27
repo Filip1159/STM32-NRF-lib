@@ -35,31 +35,19 @@ enum Command {
 };
 
 enum Bit {
-	dataReceived = 6,
+	dataReady = 6,
 	dataSent = 5,
 	maxRetransmits = 4,
-	enableCrcBit = 3,
+	enCrc = 3,
 	crco = 2,
 	powerUp = 1,
 	primRx = 0,
-	enableAutoAckPipe5 = 5,
-	enableAutoAckPipe4 = 4,
-	enableAutoAckPipe3 = 3,
-	enableAutoAckPipe2 = 2,
-	enableAutoAckPipe1 = 1,
 	enableAutoAckPipe0 = 0,
-	enableRxPipe5 = 5,
-	enableRxPipe4 = 4,
-	enableRxPipe3 = 3,
-	enableRxPipe2 = 2,
-	enableRxPipe1 = 1,
 	enableRxPipe0 = 0,
 	aw = 0,
-	ard = 4,
-	arc = 0,
 	pllLock = 4,
-	rfDataRateHigh = 3,
-	rfDataRateLow = 5,
+	dataRateHigh = 3,
+	dataRateLow = 5,
 	rfPwr = 1,
 	lnaHcurr = 0,
 	rxPNo = 1,
@@ -75,39 +63,35 @@ enum Bit {
 	enDynamicPayload = 2
 };
 
-#define NRF24_PAYLOAD_SIZE 1
-
-#define NRF24_ADDR_SIZE 3
-
 enum PipeNumber {
-	Pipe0 = 0,
-	Pipe1 = 1,
-	Pipe2 = 2,
-	Pipe3 = 3,
-	Pipe4 = 4,
-	Pipe5 = 5
+	pipe0 = 0,
+	pipe1 = 1,
+	pipe2 = 2,
+	pipe3 = 3,
+	pipe4 = 4,
+	pipe5 = 5
 };
 
 enum AddrSize {
-	Size_3bytes = 3,
-	Size_4bytes = 4,
-	Size_5bytes = 5
+	size3bytes = 3,
+	size4bytes = 4,
+	size5bytes = 5
 };
 
 enum CrcLength {
-	Crc_1byte = 0,
-	Crc_2bytes = 1
+	crc1byte = 0,
+	crc2bytes = 1
 };
 
 enum DataRate {
-	DataRate_250kbps = 2,
-	DataRate_1mbps = 0,
-	DataRate_2mbps = 1
+	dataRate250kbps = 2,
+	dataRate1mbps = 0,
+	dataRate2mbps = 1
 };
 
 enum PowerLevel {
-	Power_m18 = 0,
-	Power_m12 = 1,
-	Power_m6 = 2,
-	Power_0 = 3
+	power_m18 = 0,
+	power_m12 = 1,
+	power_m6 = 2,
+	power_0 = 3
 };

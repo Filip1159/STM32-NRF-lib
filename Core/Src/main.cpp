@@ -58,7 +58,15 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+extern "C" int __io_putchar(int ch)
+{
+	if (ch == '\n') {
+		uint8_t cr = '\r';
+		HAL_UART_Transmit(&huart2, (uint8_t*)&cr, 1, HAL_MAX_DELAY);
+	}
+    HAL_UART_Transmit(&huart2, (uint8_t*)&ch, 1, HAL_MAX_DELAY);
+    return 1;
+}
 /* USER CODE END 0 */
 
 /**
@@ -93,8 +101,8 @@ int main(void)
   MX_SPI1_Init();
   MX_ADC_Init();
   /* USER CODE BEGIN 2 */
-  Nrf24 nrf(&hspi1, CSN_GPIO_Port, CSN_Pin, CE_GPIO_Port, CE_Pin, Power_0, DataRate_250kbps, 124, Pipe0);
-  nrf.setRxAddressForPipe(Pipe0, (uint8_t*)"Odb");
+  Nrf24 nrf(&hspi1, CSN_GPIO_Port, CSN_Pin, CE_GPIO_Port, CE_Pin, power_0, dataRate250kbps, 124, pipe0, false, 1, size3bytes);
+  nrf.setRxAddressForPipe(pipe0, (uint8_t*)"Odb");
   nrf.setTxAddress((uint8_t*)"Nad");
   nrf.txMode();
   uint32_t tick = HAL_GetTick();
@@ -110,12 +118,10 @@ int main(void)
 		  message++;
 		  nrf.writeTxPayload(&message, 1);
 		  HAL_Delay(1);
-		  HAL_UART_Transmit(&huart2, (uint8_t*)"PayloadWritten ", 15, 1000);
-		  if(nrf.waitTx() == 0) HAL_UART_Transmit(&huart2, (uint8_t*)"TxSent\n", 7, 1000);
-		  else HAL_UART_Transmit(&huart2, (uint8_t*)"TxTimeout\n", 10, 1000);
+		  nrf.waitTx();
+		  printf("Payload written");
+		  fflush(stdout);
 		  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-	  } else {
-		  HAL_UART_Transmit(&huart2, (uint8_t*)".", 1, 1000);
 	  }
     /* USER CODE END WHILE */
 
@@ -180,9 +186,13 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
+
   __disable_irq();
   while (1)
   {
+	  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+	  printf("Error_Handler");
+	  HAL_Delay(50);
   }
   /* USER CODE END Error_Handler_Debug */
 }
@@ -200,6 +210,8 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+	printf("Wrong parameters value: file %s on line %ld\r\n", file, line);
+	Error_Handler();
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
