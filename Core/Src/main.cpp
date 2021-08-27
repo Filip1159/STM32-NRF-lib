@@ -106,6 +106,8 @@ int main(void)
   nrf.setTxAddress((uint8_t*)"Nad");
   nrf.txMode();
   uint32_t tick = HAL_GetTick();
+  uint8_t payloadSizes[10] = { 13, 6, 21, 32, 9, 1, 3, 5, 19, 26 };
+  uint8_t cnt = 0;
   uint8_t message[] = "123456789 123456789 123456789 XX";  // don't use uint8_t* message here, as it' s a pointer to string literal, that cannot be modified - program crashes here
   /* USER CODE END 2 */
 
@@ -115,11 +117,11 @@ int main(void)
   {
 	  if (HAL_GetTick() - tick > 200) {
 		  tick = HAL_GetTick();
-		  nrf.writeTxPayload(message, 32);
+		  nrf.writeTxPayload(message, payloadSizes[cnt++]);
+		  cnt %= 10;
 		  HAL_Delay(1);
 		  nrf.waitTx();
-		  printf("Payload written");
-		  fflush(stdout);
+		  printf("Payload written\n");
 		  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 		  for (uint8_t i=0; i<32; i++) {
 			  message[i]++;
