@@ -69,21 +69,28 @@ void Error_Handler(void);
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin GPIO_PIN_3
 #define USART_RX_GPIO_Port GPIOA
-#define LD2_Pin GPIO_PIN_5
-#define LD2_GPIO_Port GPIOA
-#define IRQ_Pin GPIO_PIN_6
+#define IRQ_Pin GPIO_PIN_4
 #define IRQ_GPIO_Port GPIOA
-#define IRQ_EXTI_IRQn EXTI4_15_IRQn
-#define ERR_Pin GPIO_PIN_0
-#define ERR_GPIO_Port GPIOB
-#define MOTOR_FORWARD_Pin GPIO_PIN_10
-#define MOTOR_FORWARD_GPIO_Port GPIOB
-#define MOTOR_BACKWARD_Pin GPIO_PIN_8
-#define MOTOR_BACKWARD_GPIO_Port GPIOA
+#define KEYPAD_0_Pin GPIO_PIN_5
+#define KEYPAD_0_GPIO_Port GPIOA
+#define KEYPAD_1_Pin GPIO_PIN_6
+#define KEYPAD_1_GPIO_Port GPIOA
+#define KEYPAD_2_Pin GPIO_PIN_7
+#define KEYPAD_2_GPIO_Port GPIOA
+#define KEYPAD_7_Pin GPIO_PIN_10
+#define KEYPAD_7_GPIO_Port GPIOB
+#define KEYPAD_4_Pin GPIO_PIN_7
+#define KEYPAD_4_GPIO_Port GPIOC
+#define KEYPAD_6_Pin GPIO_PIN_8
+#define KEYPAD_6_GPIO_Port GPIOA
+#define KEYPAD_5_Pin GPIO_PIN_9
+#define KEYPAD_5_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
+#define KEYPAD_3_Pin GPIO_PIN_6
+#define KEYPAD_3_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

@@ -22,7 +22,6 @@
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
-#include "adc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -99,34 +98,54 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_SPI1_Init();
-  MX_ADC_Init();
   /* USER CODE BEGIN 2 */
   Nrf24 nrf(&hspi1, CSN_GPIO_Port, CSN_Pin, CE_GPIO_Port, CE_Pin, power_0, dataRate250kbps, 124, pipe0, true, 32, size3bytes);
   nrf.setRxAddressForPipe(pipe0, (uint8_t*)"Odb");
   nrf.setTxAddress((uint8_t*)"Nad");
   nrf.txMode();
-  uint32_t tick = HAL_GetTick();
-  uint8_t payloadSizes[10] = { 13, 6, 21, 32, 9, 1, 3, 5, 19, 26 };
-  uint8_t cnt = 0;
-  uint8_t message[] = "123456789 123456789 123456789 XX";  // don't use uint8_t* message here, as it' s a pointer to string literal, that cannot be modified - program crashes here
+  char c = 'x';
+  const char keys[4][4] = {
+	  {'1', '2', '3', 'A'},
+	  {'4', '5', '6', 'B'},
+	  {'7', '8', '9', 'C'},
+	  {'*', '0', '#', 'D'}
+  };
+  GPIO_TypeDef* const ports[2][4] = {
+	{KEYPAD_4_GPIO_Port, KEYPAD_5_GPIO_Port, KEYPAD_6_GPIO_Port, KEYPAD_7_GPIO_Port},
+	{KEYPAD_0_GPIO_Port, KEYPAD_1_GPIO_Port, KEYPAD_2_GPIO_Port, KEYPAD_3_GPIO_Port}
+  };
+  const uint16_t pins[2][4] = {
+	{KEYPAD_4_Pin, KEYPAD_5_Pin, KEYPAD_6_Pin, KEYPAD_7_Pin},
+	{KEYPAD_0_Pin, KEYPAD_1_Pin, KEYPAD_2_Pin, KEYPAD_3_Pin}
+  };
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if (HAL_GetTick() - tick > 200) {
-		  tick = HAL_GetTick();
-		  nrf.writeTxPayload(message, payloadSizes[cnt++]);
-		  cnt %= 10;
-		  HAL_Delay(1);
-		  nrf.waitTx();
-		  printf("Payload written\n");
-		  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-		  for (uint8_t i=0; i<32; i++) {
-			  message[i]++;
+	  c = 'x';
+	  for (uint8_t i=0; i<4; i++) {
+		  for(uint8_t j=0; j<4; j++) {
+			  if (HAL_GPIO_ReadPin(ports[0][i], pins[0][i]) == GPIO_PIN_SET) {
+				  HAL_GPIO_WritePin(ports[1][j], pins[1][j], GPIO_PIN_RESET);
+				  if (HAL_GPIO_ReadPin(ports[0][i], pins[0][i]) == GPIO_PIN_RESET) {
+					  c = keys[j][i];
+					  break;
+				  }
+			  }
 		  }
+		  HAL_GPIO_WritePin(KEYPAD_0_GPIO_Port, KEYPAD_0_Pin, GPIO_PIN_SET);
+		  HAL_GPIO_WritePin(KEYPAD_1_GPIO_Port, KEYPAD_1_Pin, GPIO_PIN_SET);
+		  HAL_GPIO_WritePin(KEYPAD_2_GPIO_Port, KEYPAD_2_Pin, GPIO_PIN_SET);
+		  HAL_GPIO_WritePin(KEYPAD_3_GPIO_Port, KEYPAD_3_Pin, GPIO_PIN_SET);
+		  if (c != 'x') break;
 	  }
+
+	  nrf.writeTxPayload((uint8_t*)&c, 1);
+	  HAL_Delay(1);
+	  nrf.waitTx();
+	  HAL_Delay(100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -194,7 +213,6 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
-	  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 	  printf("Error_Handler");
 	  HAL_Delay(50);
   }
