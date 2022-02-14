@@ -1,1 +1,4 @@
 /Debug/
+/Drivers/
+/STM32F091RCTX_FLASH.ld
+/F091-nrf-object Debug.launch

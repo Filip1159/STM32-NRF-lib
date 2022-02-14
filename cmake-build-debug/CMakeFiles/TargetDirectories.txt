@@ -1,3 +1,0 @@
-C:/Users/PAVILION/Documents/STM32CubeIDE/F091-nrf-object/cmake-build-debug/CMakeFiles/F091-nrf-object.elf.dir
-C:/Users/PAVILION/Documents/STM32CubeIDE/F091-nrf-object/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/PAVILION/Documents/STM32CubeIDE/F091-nrf-object/cmake-build-debug/CMakeFiles/rebuild_cache.dir
